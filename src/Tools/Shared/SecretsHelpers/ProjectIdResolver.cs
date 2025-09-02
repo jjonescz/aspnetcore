@@ -101,10 +101,11 @@ internal sealed class ProjectIdResolver
             process.BeginErrorReadLine();
             process.WaitForExit();
 
+            _reporter.Verbose(outputBuilder.ToString());
+            _reporter.Verbose(errorBuilder.ToString());
+
             if (process.ExitCode != 0)
             {
-                _reporter.Verbose(outputBuilder.ToString());
-                _reporter.Verbose(errorBuilder.ToString());
                 _reporter.Error($"Exit code: {process.ExitCode}");
                 _reporter.Error(SecretsHelpersResources.FormatError_ProjectFailedToLoad(projectFile));
                 return null;

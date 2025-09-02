@@ -143,6 +143,11 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
                 _console.GetOutput());
         }
 
+        if (!string.IsNullOrEmpty(_console.GetOutput()))
+        {
+            throw new InvalidOperationException($"Output: {_console.GetOutput()}");
+        }
+
         _console.ClearOutput();
         var args = fromCurrentDirectory
             ? new string[] { "list", "--verbose" }
@@ -172,8 +177,6 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
             : ["list", .. pathArgs, "--verbose"];
         secretManager.RunInternal(args);
         AssertContains(Resources.Error_No_Secrets_Found, _console.GetOutput());
-
-        throw new InvalidOperationException($"Output: {_console.GetOutput()}");
 
         static void AssertContains(string expected, string actual)
         {
