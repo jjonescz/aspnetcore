@@ -132,13 +132,13 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
         {
             var parameters = fromCurrentDirectory ?
                 new string[] { "set", secret.Key, secret.Value, "--verbose" } :
-                [ "set", secret.Key, secret.Value, .. pathArgs, "--verbose" ];
+                ["set", secret.Key, secret.Value, .. pathArgs, "--verbose"];
             secretManager.RunInternal(parameters);
         }
 
         foreach (var keyValue in secrets)
         {
-            Assert.Contains(
+            AssertContains(
                 string.Format(CultureInfo.InvariantCulture, "Successfully saved {0} to the secret store.", keyValue.Key),
                 _console.GetOutput());
         }
@@ -150,7 +150,7 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
         secretManager.RunInternal(args);
         foreach (var keyValue in secrets)
         {
-            Assert.Contains(
+            AssertContains(
                 string.Format(CultureInfo.InvariantCulture, "{0} = {1}", keyValue.Key, keyValue.Value),
                 _console.GetOutput());
         }
@@ -171,7 +171,15 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
             ? new string[] { "list", "--verbose" }
             : ["list", .. pathArgs, "--verbose"];
         secretManager.RunInternal(args);
-        Assert.Contains(Resources.Error_No_Secrets_Found, _console.GetOutput());
+        AssertContains(Resources.Error_No_Secrets_Found, _console.GetOutput());
+
+        static void AssertContains(string expected, string actual)
+        {
+            if (!actual.Contains(expected))
+            {
+                throw new InvalidOperationException($"Not found '{expected}' in '{actual}'");
+            }
+        }
     }
 
     [Fact]
