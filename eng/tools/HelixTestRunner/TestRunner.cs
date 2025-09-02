@@ -229,7 +229,7 @@ public class TestRunner
             var testProcessTimeout = Options.Timeout.Subtract(TimeSpan.FromMinutes(5));
             var cts = new CancellationTokenSource(testProcessTimeout);
             var diagLog = Path.Combine(Environment.GetEnvironmentVariable("HELIX_WORKITEM_UPLOAD_ROOT"), "vstest.log");
-            var commonTestArgs = $"test {Options.Target} --diag:{diagLog} --logger xunit --logger \"console;verbosity=normal\" " +
+            var commonTestArgs = $"test {Options.Target} --diag:{diagLog} --logger xunit --logger \"console;verbosity=detailed\" " +
                                  "--blame-crash --blame-hang-timeout 15m";
             if (Options.Quarantined)
             {
