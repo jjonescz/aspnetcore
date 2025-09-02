@@ -173,6 +173,8 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
         secretManager.RunInternal(args);
         AssertContains(Resources.Error_No_Secrets_Found, _console.GetOutput());
 
+        throw new InvalidOperationException($"Output: {_console.GetOutput()}");
+
         static void AssertContains(string expected, string actual)
         {
             if (!actual.Contains(expected))
