@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <Reference Include="System.IdentityModel.Tokens.Jwt" />
+    <Reference Include="System.IO.Hashing" />
     <Reference Include="Microsoft.Extensions.Configuration.Abstractions" />
     <Reference Include="Microsoft.Extensions.Configuration" />
     <Reference Include="Microsoft.Extensions.Configuration.Binder" />

@@ -1164,6 +1164,10 @@
     <Project Path="src/Tools/dotnet-user-secrets/src/dotnet-user-secrets.csproj" />
     <Project Path="src/Tools/dotnet-user-secrets/test/dotnet-user-secrets.Tests.csproj" />
   </Folder>
+  <Folder Name="/src/Tools/dotnet-user-jwts/">
+    <Project Path="src/Tools/dotnet-user-jwts/src/dotnet-user-jwts.csproj" />
+    <Project Path="src/Tools/dotnet-user-jwts/test/dotnet-user-jwts.Tests.csproj" />
+  </Folder>
   <Folder Name="/src/Tools/Extensions.ApiDescription.Client/">
     <Project Path="src/Tools/Extensions.ApiDescription.Client/src/Microsoft.Extensions.ApiDescription.Client.csproj" />
     <Project Path="src/Tools/Extensions.ApiDescription.Client/test/Microsoft.Extensions.ApiDescription.Client.Tests.csproj" />
@@ -1274,8 +1278,6 @@
   <Project Path="src/StaticAssets/test/Microsoft.AspNetCore.StaticAssets.Tests.csproj" />
   <Project Path="src/Testing/src/Microsoft.AspNetCore.InternalTesting.csproj" />
   <Project Path="src/Testing/test/Microsoft.AspNetCore.InternalTesting.Tests.csproj" />
-  <Project Path="src/Tools/dotnet-user-jwts/src/dotnet-user-jwts.csproj" />
-  <Project Path="src/Tools/dotnet-user-jwts/test/dotnet-user-jwts.Tests.csproj" />
   <Project Path="src/Tools/GetDocumentInsider/sample/GetDocumentSample.csproj" />
   <Project Path="src/Tools/GetDocumentInsider/tests/GetDocumentInsider.Tests.csproj" />
   <Project Path="src/Tools/LinkabilityChecker/LinkabilityChecker.csproj" />

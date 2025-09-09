@@ -3,7 +3,7 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Tools;
@@ -110,23 +110,46 @@ internal sealed class ProjectIdResolver
                 return null;
             }
 
-            if (!File.Exists(outputFile))
+            if (TryReadIdFromFile(outputFile, out var id))
             {
-                _reporter.Error(SecretsHelpersResources.FormatError_ProjectMissingId(projectFile));
-                return null;
+                return id;
             }
 
-            var id = File.ReadAllText(outputFile)?.Trim();
-            if (string.IsNullOrEmpty(id))
-            {
-                _reporter.Error(SecretsHelpersResources.FormatError_ProjectMissingId(projectFile));
-            }
-            return id;
-
+            // Include file name in the ID so it can be tracked back to the project when looking into the storage directory.
+            var fileName = Path.GetFileNameWithoutExtension(projectFile);
+            var hash = Hash(projectFile);
+            return $"{fileName}-{hash}";
         }
         finally
         {
             TryDelete(outputFile);
+        }
+
+        static bool TryReadIdFromFile(string filePath, out string id)
+        {
+            if (!File.Exists(filePath))
+            {
+                id = null;
+                return false;
+            }
+
+            id = File.ReadAllText(filePath)?.Trim();
+            if (string.IsNullOrEmpty(id))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        static string Hash(string text)
+        {
+            text = text.ToUpperInvariant();
+            var bytes = Encoding.UTF8.GetBytes(text);
+            Span<byte> hash = stackalloc byte[sizeof(ulong) * 2];
+            int bytesWritten = XxHash128.Hash(bytes.AsSpan(), hash);
+            Debug.Assert(bytesWritten == hash.Length);
+            return Convert.ToHexStringLower(hash);
         }
     }
 

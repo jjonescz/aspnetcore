@@ -36,18 +36,6 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
         return new Program(_console, Directory.GetCurrentDirectory());
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void Error_MissingId(string id)
-    {
-        var project = Path.Combine(_fixture.CreateProject(id), "TestProject.csproj");
-        var secretManager = CreateProgram();
-
-        secretManager.RunInternal("list", "-p", project, "--verbose");
-        Assert.Contains(Resources.FormatError_ProjectMissingId(project), _console.GetOutput());
-    }
-
     [Fact]
     public void Error_InvalidProjectFormat()
     {
@@ -102,10 +90,13 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
     }
 
     [Theory]
-    [InlineData(false, true)]
-    [InlineData(false, false)]
-    [InlineData(true, false)]
-    public void SetSecrets(bool fromCurrentDirectory, bool fileBasedApp)
+    [InlineData(false, true, false)]
+    [InlineData(false, false, false)]
+    [InlineData(true, false, false)]
+    [InlineData(false, true, true)]
+    [InlineData(false, false, true)]
+    [InlineData(true, false, true)]
+    public void SetSecrets(bool fromCurrentDirectory, bool fileBasedApp, bool hasId)
     {
         var secrets = new KeyValuePair<string, string>[]
                     {
@@ -118,8 +109,8 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
                     };
 
         var projectPath = fileBasedApp
-            ? _fixture.GetTempFileBasedApp(out _)
-            : _fixture.GetTempSecretProject();
+            ? (hasId ? _fixture.GetTempFileBasedApp(out _) : _fixture.CreateFileBasedApp(null))
+            : (hasId ? _fixture.GetTempSecretProject() : _fixture.CreateProject(null));
         var dir = fromCurrentDirectory
             ? projectPath
             : Path.GetTempPath();
@@ -294,14 +285,17 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
     }
 
     [Theory]
-    [InlineData(false, true)]
-    [InlineData(false, false)]
-    [InlineData(true, false)]
-    public void Clear_Secrets(bool fromCurrentDirectory, bool fileBasedApp)
+    [InlineData(false, true, false)]
+    [InlineData(false, false, false)]
+    [InlineData(true, false, false)]
+    [InlineData(false, true, true)]
+    [InlineData(false, false, true)]
+    [InlineData(true, false, true)]
+    public void Clear_Secrets(bool fromCurrentDirectory, bool fileBasedApp, bool hasId)
     {
         var projectPath = fileBasedApp
-            ? _fixture.GetTempFileBasedApp(out _)
-            : _fixture.GetTempSecretProject();
+            ? (hasId ? _fixture.GetTempFileBasedApp(out _) : _fixture.CreateFileBasedApp(null))
+            : (hasId ? _fixture.GetTempSecretProject() : _fixture.CreateProject(null));
 
         var dir = fromCurrentDirectory
             ? projectPath
@@ -362,8 +356,20 @@ public class SecretManagerTests : IClassFixture<UserSecretsTestFixture>
 
         secretManager.RunInternal("init", "-p", project);
 
-        Assert.DoesNotContain(Resources.FormatError_ProjectMissingId(project), _console.GetOutput());
+        Assert.Contains("Set UserSecretsId to", _console.GetOutput());
         Assert.DoesNotContain("--help", _console.GetOutput());
+    }
+
+    [Fact]
+    public void Init_When_Project_Already_Has_Secrets_Id()
+    {
+        var projectPath = _fixture.CreateProject("test");
+        var project = Path.Combine(projectPath, "TestProject.csproj");
+        var secretManager = new Program(_console, projectPath);
+
+        secretManager.RunInternal("init", "-p", project);
+
+        Assert.Contains(SecretsHelpersResources.FormatMessage_ProjectAlreadyInitialized(project), _console.GetOutput());
     }
 
     [ConditionalFact]

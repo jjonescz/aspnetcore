@@ -79,7 +79,7 @@ public class UserSecretsTestFixture : IDisposable
         var directory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "usersecretstest", Guid.NewGuid().ToString()));
 
         File.WriteAllText(Path.Join(directory.FullName, "app.cs"), $"""
-            #:property UserSecretsId={userSecretsId}
+            {(string.IsNullOrEmpty(userSecretsId) ? string.Empty : $"#:property UserSecretsId={userSecretsId}")}
             Console.WriteLine();
             """);
 
